@@ -1,0 +1,194 @@
+package tk.aegisstudios.kenken;
+
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Screen;
+import com.badlogic.gdx.audio.Music;
+import com.badlogic.gdx.audio.Sound;
+import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.GL20;
+import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.GlyphLayout;
+import com.badlogic.gdx.math.Rectangle;
+import com.badlogic.gdx.utils.TimeUtils;
+
+public class IntroScreen implements Screen {
+	long SECOND = 1000000000;
+	
+	final KenKen game;
+	OrthographicCamera camera;
+	GlyphLayout layout;
+	
+	Texture nikhitaImage;
+	Texture dogImage;
+	
+	Rectangle nikhita;
+	Rectangle dog;
+	
+	float batchAlpha = 0.0f;
+	
+	boolean nikhitaStage = true;
+	boolean dogStage = false;
+	boolean fading = false;
+	
+	long timeSaved;
+	boolean timeSavedSet = false;
+	
+	Music bestSongMusic;
+	Sound tadaSound;
+	
+	public IntroScreen(final KenKen gam) {
+		game = gam;
+		
+		camera = new OrthographicCamera();
+		camera.setToOrtho(false, 800, 480);
+		
+		layout = new GlyphLayout();
+		
+		nikhitaImage = new Texture(Gdx.files.internal("img/nikhita.png"));
+		nikhita = new Rectangle();
+		nikhita.x = (800 - 200) / 2;
+		nikhita.y = (480 - 264) / 2;
+		nikhita.width = 200;
+		nikhita.height = 264;
+		
+		dogImage = new Texture(Gdx.files.internal("img/dog.png"));
+		dog = new Rectangle();
+		dog.x = (800 - 250) / 2;
+		dog.y = (480 - 220) / 2;
+		dog.width = 250;
+		dog.height = 220;
+		
+		bestSongMusic = Gdx.audio.newMusic(Gdx.files.internal("bgm/bestsongintro.ogg"));
+		bestSongMusic.setLooping(true);
+		bestSongMusic.play();
+		
+		tadaSound = Gdx.audio.newSound(Gdx.files.internal("sfx/tada.mp3"));
+	}
+	
+	@Override
+	public void show() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void render(float delta) {
+		
+		if (nikhitaStage) {
+			Gdx.gl.glClearColor(1.0f, 0.0f, 0.0f, 1.0f);
+		} else if (dogStage) {
+			Gdx.gl.glClearColor(0.2f, 0.0f, 0.7f, 1.0f);
+		}
+		
+		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+		
+		camera.update();
+		
+		game.batch.setProjectionMatrix(camera.combined);
+		
+		game.batch.begin();
+		game.batch.setColor(1.0f, 1.0f, 1.0f, batchAlpha);
+		if (nikhitaStage) {
+			if (!fading) batchAlpha += 0.25f * delta;
+			
+			game.font.setColor(Color.WHITE);
+			layout.setText(game.font, "You were kidnapped by the evil lord Nikhito!");
+			int textX = (800 - (int) layout.width) / 2;
+			int textY = 50;
+			game.font.draw(game.batch, layout, textX, textY);
+			game.batch.draw(nikhitaImage, nikhita.x, nikhita.y, nikhita.width, nikhita.height);
+			
+			if (batchAlpha >= 1.0f) {
+				fading = true;
+			} if (fading) {
+				batchAlpha -= 0.25f * delta;
+				if (batchAlpha <= 0.0f) {
+					fading = false;
+					nikhitaStage = false;
+					dogStage = true;
+				}
+			}
+		} else if (dogStage) {
+			game.batch.draw(dogImage, dog.x, dog.y, dog.width, dog.height);
+			
+			if (batchAlpha <= 1.0f) {
+				batchAlpha += 0.5f * delta;
+				layout.setText(game.font, "But luckily...");
+				int textX = (800 - (int) layout.width) / 2;
+				int textY = 50;
+				
+				game.font.draw(game.batch, layout, textX, textY);
+			}
+			
+			if ((batchAlpha >= 1.0f && !timeSavedSet) || (timeSavedSet && TimeUtils.timeSinceNanos(timeSaved) <= 2 * SECOND)) {
+				layout.setText(game.font, "Your dog came to save you!");
+				int textX = (800 - (int) layout.width) / 2;
+				int textY = 50;
+				
+				game.font.draw(game.batch, layout, textX, textY);
+				
+				if (!timeSavedSet) {
+					tadaSound.play();
+					timeSavedSet = true;
+					timeSaved = TimeUtils.nanoTime();
+				}
+			}
+			
+			if (timeSavedSet && TimeUtils.timeSinceNanos(timeSaved) >= 2 * SECOND && TimeUtils.timeSinceNanos(timeSaved) <= 6 * SECOND) {
+				layout.setText(game.font, "But...");
+				int textX = (800 - (int) layout.width) / 2;
+				int textY = 50;
+				
+				game.font.draw(game.batch, layout, textX, textY);
+			}
+			
+			if (timeSavedSet && TimeUtils.timeSinceNanos(timeSaved) >= 6 * SECOND && TimeUtils.timeSinceNanos(timeSaved) <= 10 * SECOND) {
+				layout.setText(game.font, "Your dog only listens if you calculate trig functions!");
+				int textX = (800 - (int) layout.width) / 2;
+				int textY = 50;
+				
+				game.font.draw(game.batch, layout, textX, textY);
+			}
+			
+			if (timeSavedSet && TimeUtils.timeSinceNanos(timeSaved) >= 15 * SECOND) {
+				game.setScreen(new GameScreen(game));
+				dispose();
+			}
+		}
+		game.batch.end();
+	}
+	
+	@Override
+	public void resize(int width, int height) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void pause() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void resume() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void hide() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void dispose() {
+		nikhitaImage.dispose();
+		dogImage.dispose();
+		bestSongMusic.dispose();
+		tadaSound.dispose();
+	}
+
+}
