@@ -12,32 +12,32 @@ import com.badlogic.gdx.graphics.g2d.GlyphLayout;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.utils.TimeUtils;
 
-public class IntroScreen implements Screen {
-	long SECOND = 1000000000;
+class IntroScreen implements Screen {
+	private long SECOND;
+
+	private final KenKen game;
+	private OrthographicCamera camera;
+	private GlyphLayout layout;
 	
-	final KenKen game;
-	OrthographicCamera camera;
-	GlyphLayout layout;
+	private Texture nikhitaImage;
+	private Texture dogImage;
+
+    private Rectangle nikhita;
+	private Rectangle dog;
 	
-	Texture nikhitaImage;
-	Texture dogImage;
+	private float batchAlpha = 0.0f;
 	
-	Rectangle nikhita;
-	Rectangle dog;
+	private boolean nikhitaStage = true;
+	private boolean dogStage = false;
+	private boolean fading = false;
 	
-	float batchAlpha = 0.0f;
+	private long timeSaved;
+	private boolean timeSavedSet = false;
 	
-	boolean nikhitaStage = true;
-	boolean dogStage = false;
-	boolean fading = false;
+	private Music bestSongMusic;
+	private Sound tadaSound;
 	
-	long timeSaved;
-	boolean timeSavedSet = false;
-	
-	Music bestSongMusic;
-	Sound tadaSound;
-	
-	public IntroScreen(final KenKen gam) {
+	IntroScreen(final KenKen gam) {
 		game = gam;
 		
 		camera = new OrthographicCamera();
@@ -45,14 +45,15 @@ public class IntroScreen implements Screen {
 		
 		layout = new GlyphLayout();
 		
-		nikhitaImage = new Texture(Gdx.files.internal("img/nikhita.png"));
+		nikhitaImage = new Texture(Gdx.files.internal("img/nikhito.png"));
+		dogImage = new Texture(Gdx.files.internal("img/dog.png"));
+		
 		nikhita = new Rectangle();
 		nikhita.x = (800 - 200) / 2;
 		nikhita.y = (480 - 264) / 2;
 		nikhita.width = 200;
 		nikhita.height = 264;
 		
-		dogImage = new Texture(Gdx.files.internal("img/dog.png"));
 		dog = new Rectangle();
 		dog.x = (800 - 250) / 2;
 		dog.y = (480 - 220) / 2;
@@ -64,19 +65,18 @@ public class IntroScreen implements Screen {
 		bestSongMusic.play();
 		
 		tadaSound = Gdx.audio.newSound(Gdx.files.internal("sfx/tada.mp3"));
+
+		SECOND = 1000000000L;
 	}
 	
 	@Override
-	public void show() {
-		// TODO Auto-generated method stub
-		
-	}
+	public void show() {}
 
 	@Override
 	public void render(float delta) {
 		
 		if (nikhitaStage) {
-			Gdx.gl.glClearColor(1.0f, 0.0f, 0.0f, 1.0f);
+			Gdx.gl.glClearColor(80/255f, 80/255f, 80/255f, 1.0f);
 		} else if (dogStage) {
 			Gdx.gl.glClearColor(0.2f, 0.0f, 0.7f, 1.0f);
 		}
@@ -112,7 +112,7 @@ public class IntroScreen implements Screen {
 		} else if (dogStage) {
 			game.batch.draw(dogImage, dog.x, dog.y, dog.width, dog.height);
 			
-			if (batchAlpha <= 1.0f) {
+			if (batchAlpha <= 1.0f && !timeSavedSet) {
 				batchAlpha += 0.5f * delta;
 				layout.setText(game.font, "But luckily...");
 				int textX = (800 - (int) layout.width) / 2;
@@ -120,7 +120,7 @@ public class IntroScreen implements Screen {
 				
 				game.font.draw(game.batch, layout, textX, textY);
 			}
-			
+
 			if ((batchAlpha >= 1.0f && !timeSavedSet) || (timeSavedSet && TimeUtils.timeSinceNanos(timeSaved) <= 2 * SECOND)) {
 				layout.setText(game.font, "Your dog came to save you!");
 				int textX = (800 - (int) layout.width) / 2;
@@ -148,40 +148,34 @@ public class IntroScreen implements Screen {
 				int textX = (800 - (int) layout.width) / 2;
 				int textY = 50;
 				
+				fading = true;
+				
 				game.font.draw(game.batch, layout, textX, textY);
 			}
 			
-			if (timeSavedSet && TimeUtils.timeSinceNanos(timeSaved) >= 15 * SECOND) {
-				game.setScreen(new GameScreen(game));
-				dispose();
+			if (fading) {
+				batchAlpha -= 0.2f * delta;
+				
+				if (batchAlpha <= 0.0f) {
+					game.setScreen(new Intro2Screen(game));
+					dispose();
+				}
 			}
 		}
 		game.batch.end();
 	}
 	
 	@Override
-	public void resize(int width, int height) {
-		// TODO Auto-generated method stub
-		
-	}
+	public void resize(int width, int height) {}
 
 	@Override
-	public void pause() {
-		// TODO Auto-generated method stub
-		
-	}
+	public void pause() {}
 
 	@Override
-	public void resume() {
-		// TODO Auto-generated method stub
-		
-	}
+	public void resume() {}
 
 	@Override
-	public void hide() {
-		// TODO Auto-generated method stub
-		
-	}
+	public void hide() {}
 
 	@Override
 	public void dispose() {

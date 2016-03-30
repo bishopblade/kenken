@@ -2,22 +2,24 @@ package tk.aegisstudios.kenken;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
-import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.GlyphLayout;
 import com.badlogic.gdx.math.Rectangle;
 
-public class MainMenuScreen implements Screen {
-	final KenKen game;
-	OrthographicCamera camera;
+class MainMenuScreen implements Screen {
+	private final KenKen game;
+	private OrthographicCamera camera;
 	
-	Texture kenLeftImage;
-	Texture kenRightImage;
-	Rectangle kenLeft;
-	Rectangle kenRight;
+	private Texture kenLeftImage;
+	private Texture kenRightImage;
+	private Rectangle kenLeft;
+	private Rectangle kenRight;
+	
+	private GlyphLayout layout;
 
-	public MainMenuScreen(final KenKen gam) {
+	MainMenuScreen(final KenKen gam) {
 		game = gam;
 		
 		camera = new OrthographicCamera();
@@ -36,13 +38,12 @@ public class MainMenuScreen implements Screen {
 		kenRight.y = (480 - 375) / 2;
 		kenRight.width = 189;
 		kenRight.height = 375;
+		
+		layout = new GlyphLayout();
 	}
 	
 	@Override
-	public void show() {
-		// TODO Auto-generated method stub
-
-	}
+	public void show() {}
 
 	@Override
 	public void render(float delta) {
@@ -54,41 +55,33 @@ public class MainMenuScreen implements Screen {
 		game.batch.setProjectionMatrix(camera.combined);
 		
 		game.batch.begin();
-		game.font.draw(game.batch, "Welcome to Ken-Ken!", 330, 440);
-		game.font.draw(game.batch, "Press ENTER to start.", 330, 50);
+		layout.setText(game.font, "Welcome to Ken-Ken!");
+		game.font.draw(game.batch, layout, (800 - layout.width) / 2, 440);
+		
+		layout.setText(game.font, "Click anywhere to start");
+		game.font.draw(game.batch, layout, (800 - layout.width) / 2, 50);
+		
 		game.batch.draw(kenLeftImage, kenLeft.x, kenLeft.y, kenLeft.width, kenLeft.height);
 		game.batch.draw(kenRightImage, kenRight.x, kenRight.y, kenRight.width, kenRight.height);
 		game.batch.end();
 		
-		if (Gdx.input.isKeyPressed(Keys.ENTER)) {
+		if (Gdx.input.isTouched()) {
 			game.setScreen(new IntroScreen(game));
 			dispose();
 		}
 	}
 
 	@Override
-	public void resize(int width, int height) {
-		// TODO Auto-generated method stub
-
-	}
+	public void resize(int width, int height) {}
 
 	@Override
-	public void pause() {
-		// TODO Auto-generated method stub
-
-	}
+	public void pause() {}
 
 	@Override
-	public void resume() {
-		// TODO Auto-generated method stub
-
-	}
+	public void resume() {}
 
 	@Override
-	public void hide() {
-		// TODO Auto-generated method stub
-
-	}
+	public void hide() {}
 
 	@Override
 	public void dispose() {
