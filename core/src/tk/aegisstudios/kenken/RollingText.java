@@ -1,6 +1,7 @@
 package tk.aegisstudios.kenken;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input;
 import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.Texture;
@@ -44,7 +45,7 @@ class RollingText {
 			textSound.play();
 			substrEnd++;
 		}
-		if (substrEnd == message.length() && Gdx.input.isTouched()) {
+		if (substrEnd == message.length() && (Gdx.input.isTouched() || Gdx.input.isKeyPressed(Input.Keys.ANY_KEY))) {
 			isFinished = true;
 		}
 		

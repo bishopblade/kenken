@@ -79,6 +79,9 @@ class Intro2Screen implements Screen {
                 woofSound.play();
             }
             if (NIKHITA_TEXT_2.isFinished) {
+                Gdx.gl.glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
+                Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+                camera.update();
                 game.setScreen(new GameScreen(game));
             }
 

@@ -12,6 +12,8 @@ class GameScreen implements Screen {
 
     private Music bestSongMusic;
 
+    private Problem currentProblem;
+
     GameScreen(final KenKen gam) {
         game = gam;
 
@@ -21,6 +23,8 @@ class GameScreen implements Screen {
         bestSongMusic = Gdx.audio.newMusic(Gdx.files.internal("bgm/bestsongmain.ogg"));
         bestSongMusic.setLooping(true);
         bestSongMusic.play();
+
+        currentProblem = Problem.randomProblem();
     }
 
     @Override
@@ -33,6 +37,8 @@ class GameScreen implements Screen {
         game.batch.setProjectionMatrix(camera.combined);
 
         game.batch.begin();
+        game.font.draw(game.batch, currentProblem.problemToString(), 5, 40);
+        game.font.draw(game.batch, currentProblem.solutionToString(), 5, 20);
         game.batch.end();
     }
 
