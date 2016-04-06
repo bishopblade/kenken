@@ -24,4 +24,9 @@ public class ProblemKey {
         result = 31 * result + (angle != null ? angle.hashCode() : 0);
         return result;
     }
+
+    public String toString() {
+        return type + " of " + angle;
+    }
+
 }

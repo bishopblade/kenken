@@ -1,6 +1,7 @@
 package tk.aegisstudios.kenken;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
@@ -67,6 +68,11 @@ class MainMenuScreen implements Screen {
 		
 		if (Gdx.input.isTouched()) {
 			game.setScreen(new IntroScreen(game));
+			dispose();
+		}
+
+		if (Gdx.input.isKeyPressed(Input.Keys.G)) {
+			game.setScreen(new GameScreen(game));
 			dispose();
 		}
 	}

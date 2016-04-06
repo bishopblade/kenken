@@ -5,6 +5,9 @@ import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.GlyphLayout;
+import com.badlogic.gdx.utils.TimeUtils;
 
 class GameScreen implements Screen {
     private final KenKen game;
@@ -12,7 +15,17 @@ class GameScreen implements Screen {
 
     private Music bestSongMusic;
 
+    private GlyphLayout layout;
+
     private Problem currentProblem;
+    private Solution[] currentSolutions;
+
+    private Texture separatorsTexture;
+
+    private Dog dog;
+    private Nikhita nikhita;
+
+    private long lastAnswerTime;
 
     GameScreen(final KenKen gam) {
         game = gam;
@@ -24,7 +37,14 @@ class GameScreen implements Screen {
         bestSongMusic.setLooping(true);
         bestSongMusic.play();
 
-        currentProblem = Problem.randomProblem();
+        layout = new GlyphLayout();
+
+        chooseNewProblem();
+
+        separatorsTexture = new Texture(Gdx.files.internal("img/sprites/separators.png"));
+
+        dog = new Dog();
+        nikhita = new Nikhita(game.font);
     }
 
     @Override
@@ -37,9 +57,51 @@ class GameScreen implements Screen {
         game.batch.setProjectionMatrix(camera.combined);
 
         game.batch.begin();
-        game.font.draw(game.batch, currentProblem.problemToString(), 5, 40);
-        game.font.draw(game.batch, currentProblem.solutionToString(), 5, 20);
+
+        dog.render(game.batch);
+        nikhita.render(game.batch);
+
+        layout.setText(game.font, currentProblem.problem.toString());
+        game.font.draw(game.batch, layout, (800 - layout.width) / 2, (480 - layout.height) / 2);
+
+
+        int solX = 0;
+        game.batch.draw(separatorsTexture, 0, 0, 800, 70);
+        for (int i = 0; i < currentSolutions.length; i++) {
+            Solution solution = currentSolutions[i];
+
+            layout.setText(game.font, solution.toString());
+            game.font.draw(game.batch, layout, solX + ((200 - layout.width) / 2), layout.height+20);
+
+            solX += 200;
+        }
+
+        if (Gdx.input.isTouched() && Gdx.input.getY() > 380) {
+            Solution chosenSolution;
+
+            if (Gdx.input.getX() <= 200) {
+                chosenSolution = currentSolutions[0];
+            } else if (Gdx.input.getX() > 200 && Gdx.input.getX() <= 400) {
+                chosenSolution = currentSolutions[1];
+            } else if (Gdx.input.getX() > 400 && Gdx.input.getX() <= 600) {
+                chosenSolution = currentSolutions[2];
+            } else {
+                chosenSolution = currentSolutions[3];
+            }
+
+            if (currentProblem.isAnswerCorrect(chosenSolution) && TimeUtils.timeSinceNanos(lastAnswerTime) >= 1000000000L) {
+                lastAnswerTime = TimeUtils.nanoTime();
+                nikhita.problemAnswered();
+                chooseNewProblem();
+            }
+        }
+
         game.batch.end();
+    }
+
+    void chooseNewProblem() {
+        currentProblem = Problem.randomProblem();
+        currentSolutions = currentProblem.solutionChoicesShuffled();
     }
 
     @Override

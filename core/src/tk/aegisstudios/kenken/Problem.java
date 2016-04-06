@@ -9,8 +9,8 @@ class Problem {
     private static final String[] angles = {"0", "30", "45", "60", "90",
                                                 "π/6", "π/4", "π/3", "π/2"};
 
-    private final ProblemKey problem;
-    private final String[] solution;
+    final ProblemKey problem;
+    final Solution solution;
 
     private Problem(String type, String angle) {
         problem = new ProblemKey(type, angle);
@@ -40,15 +40,53 @@ class Problem {
         return new Problem(type, angle);
     }
 
-    String problemToString() {
-        return problem.type + " of " + problem.angle;
+    boolean isAnswerCorrect(Solution choice) {
+        return choice.equals(solution);
     }
 
-    String solutionToString() {
-        if (solution[1].equals("")) {
-            return solution[0];
-        } else {
-            return solution[0] + "/" + solution[1];
+    Solution[] solutionChoices() {
+        Solution[] choices = new Solution[4];
+        String[] typesUsed = new String[4];
+
+        choices[0] = solution;
+        typesUsed[0] = problem.type;
+
+        for (int i=1; i < 4; i++) {
+            String type;
+            Random random = new Random();
+            do {
+                type = types[random.nextInt(types.length)];
+            } while (Arrays.asList(typesUsed).contains(type));
+
+            if (problem.angle.equals("π/6")) {
+                choices[i] = SolutionMap.solutionMap.get(new ProblemKey(type, "30"));
+            } else if (problem.angle.equals("π/4")) {
+                choices[i] = SolutionMap.solutionMap.get(new ProblemKey(type, "45"));
+            } else if (problem.angle.equals("π/3")) {
+                choices[i] = SolutionMap.solutionMap.get(new ProblemKey(type, "60"));
+            } else if (problem.angle.equals("π/2")) {
+                choices[i] = SolutionMap.solutionMap.get(new ProblemKey(type, "90"));
+            } else {
+                choices[i] = SolutionMap.solutionMap.get(new ProblemKey(type, problem.angle));
+            }
+
         }
+
+        return choices;
+    }
+
+    Solution[] solutionChoicesShuffled() {
+        Solution[] solutions = solutionChoices();
+        Random random = new Random();
+
+        for (int i = solutions.length - 1; i > 0; i--) {
+            int index = random.nextInt(i + 1);
+
+            Solution sol = solutions[index];
+            solutions[index] = solutions[i];
+            solutions[i] = sol;
+        }
+
+        return solutions;
     }
 }
