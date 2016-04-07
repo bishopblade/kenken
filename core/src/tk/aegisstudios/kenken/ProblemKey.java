@@ -26,7 +26,7 @@ public class ProblemKey {
     }
 
     public String toString() {
-        return type + " of " + angle;
+        return type + " of " + angle.replace("π", "pi");
     }
 
 }

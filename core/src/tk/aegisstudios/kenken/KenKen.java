@@ -15,7 +15,7 @@ public class KenKen extends Game {
         batch = new SpriteBatch();
         font = new BitmapFont(Gdx.files.internal("fnt/munro.fnt"));
 		
-		this.setScreen(new MainMenuScreen(this));
+		this.setScreen(new MainMenuScreen(this, false));
 	}
 
 	@Override

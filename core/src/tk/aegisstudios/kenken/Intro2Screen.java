@@ -31,7 +31,7 @@ class Intro2Screen implements Screen {
 		camera = new OrthographicCamera();
 		camera.setToOrtho(false, 800, 480);
 
-		dogImage = new Texture(Gdx.files.internal("img/sprites/dogstill.png"));
+		dogImage = new Texture(Gdx.files.internal("img/sprites/dog.png"));
 		nikhitaImage = new Texture(Gdx.files.internal("img/sprites/nikhitastill.png"));
 
 		dog = new Rectangle();
@@ -46,7 +46,7 @@ class Intro2Screen implements Screen {
         nikhito.width = 144;
 		nikhito.height = 256;
 
-		NIKHITA_TEXT_1 = new RollingText("nikhito", Gdx.files.internal("img/sprites/nikhitaface.png"), "Hahaha! You will never escape!", 4.0f);
+		NIKHITA_TEXT_1 = new RollingText("nikhito", Gdx.files.internal("img/sprites/nikhitaface.png"), "Hahaha! You will never escape!", 3.0f);
 		NIKHITA_TEXT_2 = new RollingText("nikhito", Gdx.files.internal("img/sprites/nikhitaface.png"), "Wait, what?", 2.0f);
 
         woofSound = Gdx.audio.newSound(Gdx.files.internal("sfx/woof.wav"));

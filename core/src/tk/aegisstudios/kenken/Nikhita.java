@@ -6,10 +6,13 @@ import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.GlyphLayout;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Rectangle;
+import com.badlogic.gdx.utils.TimeUtils;
 
 class Nikhita {
     int health = 20;
     boolean alive = true;
+    boolean damageAnimation = false;
+    long damageAnimationStart;
 
     Texture healthTexture;
     Texture nikhitaImage;
@@ -40,7 +43,14 @@ class Nikhita {
     }
 
     void render(SpriteBatch batch) {
+        if (damageAnimation && TimeUtils.timeSinceNanos(damageAnimationStart) <= 300000000L) {
+            batch.setColor(0.9f, 0.0f, 0.0f, 1.0f);
+        } else if (damageAnimation && TimeUtils.timeSinceNanos(damageAnimationStart) >= 300000000L) {
+            damageAnimation = false;
+        }
+
         batch.draw(nikhitaImage, nikhita.x, nikhita.y, nikhita.width, nikhita.height);
+        batch.setColor(1.0f, 1.0f, 1.0f, 1.0f);
 
         layout.setText(font, health + "/20");
         if (health < 2) {

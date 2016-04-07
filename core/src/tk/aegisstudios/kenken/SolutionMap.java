@@ -40,5 +40,7 @@ final class SolutionMap {
         solutionMap.put(new ProblemKey("csc", "90"), new Solution("1", ""));
         solutionMap.put(new ProblemKey("sec", "90"), new Solution("undefined", ""));
         solutionMap.put(new ProblemKey("cot", "90"), new Solution("0", ""));
+
+        solutionMap.put(new ProblemKey("sin", "-1000"), new Solution("0", "0"));
     }
 }

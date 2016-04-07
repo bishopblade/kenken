@@ -12,9 +12,8 @@ class Problem {
     final ProblemKey problem;
     final Solution solution;
 
-    private Problem(String type, String angle) {
+    Problem(String type, String angle) {
         problem = new ProblemKey(type, angle);
-        problemsUsed.add(problem);
 
         if (angle.equals("π/6")) {
             solution = SolutionMap.solutionMap.get(new ProblemKey(type, "30"));
@@ -32,16 +31,25 @@ class Problem {
     static Problem randomProblem() {
         String type, angle;
 
+        if (problemsUsed.size() == 30) {
+            return new Problem("sin", "-1000");
+        }
+
         do {
             type = types[new Random().nextInt(types.length)];
             angle = angles[new Random().nextInt(angles.length)];
         } while (problemsUsed.contains(new ProblemKey(type, angle)));
 
+        problemsUsed.add(new ProblemKey(type, angle));
         return new Problem(type, angle);
     }
 
     boolean isAnswerCorrect(Solution choice) {
         return choice.equals(solution);
+    }
+
+    void resetProblemsUsed() {
+        problemsUsed = new ArrayList<>();
     }
 
     Solution[] solutionChoices() {
@@ -58,7 +66,9 @@ class Problem {
                 type = types[random.nextInt(types.length)];
             } while (Arrays.asList(typesUsed).contains(type));
 
-            if (problem.angle.equals("π/6")) {
+            if (problem.angle.equals("-1000")) {
+                choices[i] = new Solution("1", "1");
+            } else if (problem.angle.equals("π/6")) {
                 choices[i] = SolutionMap.solutionMap.get(new ProblemKey(type, "30"));
             } else if (problem.angle.equals("π/4")) {
                 choices[i] = SolutionMap.solutionMap.get(new ProblemKey(type, "45"));
@@ -88,5 +98,14 @@ class Problem {
         }
 
         return solutions;
+    }
+
+    @Override
+    public boolean equals(Object other) {
+        if (other == null) return false;
+        if (!(other instanceof Problem)) return false;
+
+        Problem otherKey = (Problem) other;
+        return problem.equals(otherKey.problem);
     }
 }

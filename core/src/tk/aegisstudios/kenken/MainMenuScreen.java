@@ -20,9 +20,13 @@ class MainMenuScreen implements Screen {
 	
 	private GlyphLayout layout;
 
-	MainMenuScreen(final KenKen gam) {
+    private boolean cleared;
+
+	MainMenuScreen(final KenKen gam, boolean cleared) {
 		game = gam;
-		
+
+        this.cleared = cleared;
+
 		camera = new OrthographicCamera();
 		camera.setToOrtho(false, 800, 480);
 		
@@ -60,7 +64,17 @@ class MainMenuScreen implements Screen {
 		game.font.draw(game.batch, layout, (800 - layout.width) / 2, 440);
 		
 		layout.setText(game.font, "Click anywhere to start");
-		game.font.draw(game.batch, layout, (800 - layout.width) / 2, 50);
+		game.font.draw(game.batch, layout, (800 - layout.width) / 2, 80);
+
+        if (cleared) {
+            layout.setText(game.font, "Press SPACE to skip intro");
+            game.font.draw(game.batch, layout, (800 - layout.width) / 2, 20);
+
+            if (Gdx.input.isKeyPressed(Input.Keys.SPACE)) {
+                game.setScreen(new GameScreen(game));
+                dispose();
+            }
+        }
 		
 		game.batch.draw(kenLeftImage, kenLeft.x, kenLeft.y, kenLeft.width, kenLeft.height);
 		game.batch.draw(kenRightImage, kenRight.x, kenRight.y, kenRight.width, kenRight.height);
@@ -68,11 +82,6 @@ class MainMenuScreen implements Screen {
 		
 		if (Gdx.input.isTouched()) {
 			game.setScreen(new IntroScreen(game));
-			dispose();
-		}
-
-		if (Gdx.input.isKeyPressed(Input.Keys.G)) {
-			game.setScreen(new GameScreen(game));
 			dispose();
 		}
 	}

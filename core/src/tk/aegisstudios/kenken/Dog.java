@@ -10,12 +10,12 @@ public class Dog {
     Rectangle dog;
 
     Dog() {
-        dogTexture = new Texture(Gdx.files.internal("img/sprites/dogstill.png"));
+        dogTexture = new Texture(Gdx.files.internal("img/sprites/dog.png"));
 
         dog = new Rectangle();
         dog.width = 122;
         dog.height = 104;
-        dog.x = dog.width + 20;
+        dog.x = 20;
         dog.y = (480 - dog.height) / 2;
     }
 
